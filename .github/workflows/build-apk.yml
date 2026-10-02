@@ -1,0 +1,48 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract Flutter project
+        run: |
+          rm -rf /tmp/flutter_project
+          mkdir -p /tmp/flutter_project
+          unzip -q Flexible_Packaging_APK_Build_Ready.zip -d /tmp/flutter_project
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Create Android platform
+        working-directory: /tmp/flutter_project/flexible_packaging_app
+        run: flutter create --platforms=android .
+
+      - name: Configure Firebase Android file
+        working-directory: /tmp/flutter_project/flexible_packaging_app
+        run: |
+          mkdir -p android/app
+          cp google-services.json android/app/google-services.json
+
+      - name: Get dependencies
+        working-directory: /tmp/flutter_project/flexible_packaging_app
+        run: flutter pub get
+
+      - name: Build APK
+        working-directory: /tmp/flutter_project/flexible_packaging_app
+        run: flutter build apk --release
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: flexible-packaging-release-apk
+          path: /tmp/flutter_project/flexible_packaging_app/build/app/outputs/flutter-apk/app-release.apk
