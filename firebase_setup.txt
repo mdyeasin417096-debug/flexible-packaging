@@ -1,0 +1,18 @@
+PRODUCTION BACKEND SETUP
+
+Recommended services:
+- Firebase Authentication: email/phone/OTP
+- Cloud Firestore: users, jobs, applications, news, notifications, technical_content, settings
+- Firebase Storage: CV/resume, profile image, banners
+- Firebase Cloud Messaging: push notifications
+- Firebase App Check: abuse protection
+- Firebase Analytics/Crashlytics: usage and crash monitoring
+
+Run:
+  firebase login
+  dart pub global activate flutterfire_cli
+  flutterfire configure
+
+Then add Firebase Flutter packages and replace the demo AppStore with Firestore/Auth services.
+
+Do NOT put server/admin secrets in the mobile app. Admin permissions must be enforced by backend security rules/custom claims, not only by hiding a button.
