@@ -23,6 +23,16 @@ jobs:
       - name: Create Android project
         run: flutter create --platforms=android --org com.flexiblepackaging .
 
+      - name: Set Android display name
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("android/app/src/main/AndroidManifest.xml")
+          s = p.read_text()
+          s = s.replace('android:label="flexible_packaging"', 'android:label="Flexible Packaging"')
+          p.write_text(s)
+          PY
+
       - name: Get dependencies
         run: flutter pub get
 
