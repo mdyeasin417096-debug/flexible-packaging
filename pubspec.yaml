@@ -1,38 +1,19 @@
 name: flexible_packaging
+description: A clean Flutter starter app for Flexible Packaging.
+publish_to: "none"
 version: 1.0.0+1
-description: Flexible Packaging job portal and technical knowledge app.
-publish_to: 'none'
 
 environment:
-  sdk: '>=3.6.0 <4.0.0'
+  sdk: ">=3.6.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.8
-  shared_preferences: ^2.5.3
-  intl: ^0.20.2
-  firebase_core: ^4.15.0
-  firebase_auth: ^6.7.0
-  cloud_firestore: ^6.10.0
-  firebase_storage: ^13.6.0
-  firebase_messaging: ^16.7.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/
-
-flutter_launcher_icons:
-  android: true
-  ios: false
-  image_path: assets/flexible_packaging_logo.png
-  adaptive_icon_background: '#FFFFFF'
-  adaptive_icon_foreground: assets/flexible_packaging_logo.png
-  min_sdk_android: 23

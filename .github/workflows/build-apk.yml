@@ -3,11 +3,13 @@ name: Build Flexible Packaging APK
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,58 +20,17 @@ jobs:
           channel: stable
           cache: true
 
-      - name: Generate Android project
+      - name: Create Android project
         run: flutter create --platforms=android --org com.flexiblepackaging .
-          rm -rf test
-
-      - name: Configure Android application ID, package and Firebase plugin
-        shell: bash
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          import re
-
-          app = Path('android/app/build.gradle.kts')
-          text = app.read_text()
-          text = re.sub(r'namespace\s*=\s*"[^"]+"', 'namespace = "com.flexiblepackaging.app"', text, count=1)
-          text = re.sub(r'applicationId\s*=\s*"[^"]+"', 'applicationId = "com.flexiblepackaging.app"', text, count=1)
-          if 'com.google.gms.google-services' not in text:
-              marker = '    id("dev.flutter.flutter-gradle-plugin")'
-              text = text.replace(marker, marker + '\n    id("com.google.gms.google-services")', 1)
-          app.write_text(text)
-
-          # Keep the native launcher package aligned with the Android application ID.
-          for main_activity in Path('android/app/src/main').rglob('MainActivity.kt'):
-              activity_text = main_activity.read_text()
-              activity_text = re.sub(r'^package\s+[^\n]+', 'package com.flexiblepackaging.app', activity_text, count=1, flags=re.MULTILINE)
-              main_activity.write_text(activity_text)
-
-          settings = Path('android/settings.gradle.kts')
-          text = settings.read_text()
-          if 'com.google.gms.google-services' not in text:
-              text = text.replace('plugins {', 'plugins {\n    id("com.google.gms.google-services") version "4.5.0" apply false', 1)
-          settings.write_text(text)
-          PY
-
-      - name: Install Firebase Android config
-        run: |
-          test -f google-services.json
-          mkdir -p android/app
-          cp google-services.json android/app/google-services.json
 
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Format Dart code
-        run: dart format lib
-
-      - name: Generate launcher icons
-        run: dart run flutter_launcher_icons
-
-      - name: Show formatted error area
-        run: nl -ba lib/main.dart | sed -n '1515,1530p'
       - name: Analyze
-        run: flutter analyze --no-pub
+        run: flutter analyze
+
+      - name: Run tests
+        run: flutter test
 
       - name: Build release APK
         run: flutter build apk --release
